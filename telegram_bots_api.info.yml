@@ -1,0 +1,5 @@
+name: Telegram Bots API
+type: module
+description: Telegram bots API
+core: 8.x
+package: Telegram

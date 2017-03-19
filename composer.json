@@ -1,0 +1,14 @@
+{
+  "name": "drupal/telegram_bots_api",
+  "type": "drupal-module",
+  "description": "Telegram bots API",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/telegram_bots_api",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/telegram_bots_api",
+    "source": "http://cgit.drupalcode.org/telegram_bots_api"
+  },
+  "require": { }
+}

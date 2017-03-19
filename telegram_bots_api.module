@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * @file
+ * Contains telegram_bots_api.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function telegram_bots_api_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the telegram_bots_api module.
+    case 'help.page.telegram_bots_api':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Telegram bots API') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function telegram_bots_api_theme() {
+  return [
+    'telegram_bots_api' => [
+      'template' => 'telegram_bots_api',
+      'render element' => 'children',
+    ],
+  ];
+}
