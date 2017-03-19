@@ -1,0 +1,8 @@
+
+telegram_bots_api.telegram_bots_list:
+  path: '/admin/config/services/telegram-bots'
+  defaults:
+    _controller: '\Drupal\telegram_bots_api\Controller\TelegramBots::list'
+    _title: 'List Telegram bots'
+  requirements:
+    _permission: 'access content'

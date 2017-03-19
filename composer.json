@@ -1,14 +1,16 @@
 {
-  "name": "drupal/telegram_bots_api",
+  "name": "cyberlex404/telegram_bots_api",
   "type": "drupal-module",
   "description": "Telegram bots API",
   "keywords": ["Drupal"],
   "license": "GPL-2.0+",
-  "homepage": "https://www.drupal.org/project/telegram_bots_api",
+  "homepage": "https://github.com/cyberlex404/telegram_bots_api",
   "minimum-stability": "dev",
   "support": {
-    "issues": "https://www.drupal.org/project/issues/telegram_bots_api",
-    "source": "http://cgit.drupalcode.org/telegram_bots_api"
+    "issues": "https://github.com/cyberlex404/telegram_bots_api/issues",
+    "source": "https://github.com/cyberlex404/telegram_bots_api"
   },
-  "require": { }
+  "require": {
+    "irazasyed/telegram-bot-sdk": "^2.0"
+  }
 }

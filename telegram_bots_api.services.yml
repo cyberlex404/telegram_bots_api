@@ -1,0 +1,4 @@
+services:
+  plugin.manager.telegrambots:
+    class: Drupal\telegram_bots_api\TelegramBotsPluginManager
+    parent: default_plugin_manager
