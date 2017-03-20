@@ -3,6 +3,7 @@
 namespace Drupal\telegram_bots_api\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\telegram_bots_api\TelegramBotInterface;
 use Drupal\telegram_bots_api\TelegramBotsPluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -80,10 +81,17 @@ class TelegramBots extends ControllerBase {
     // The array of plugin definitions is keyed by plugin id, so we can just use
     // that to load our plugin instances.
     foreach ($sandwich_plugin_definitions as $plugin_id => $sandwich_plugin_definition) {
-      // We now have a plugin instance. From here on it can be treated just as
-      // any other object; have its properties examined, methods called, etc.
-      $plugin = $this->telegramBotsManager->createInstance($plugin_id, array('of' => 'configuration values'));
-      $items[] = $plugin->description();
+
+
+      /**
+       * @var $telegramBot TelegramBotInterface
+       */
+      $telegramBot = $this->telegramBotsManager->createInstance($plugin_id, array('of' => 'configuration values'));
+
+      dpm($telegramBot->token(),$telegramBot->bot());
+
+      $items[] = $telegramBot->description();
+      $telegramBot->webhook();
     }
 
     $build['plugins'] = array(

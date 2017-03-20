@@ -2,3 +2,9 @@ services:
   plugin.manager.telegrambots:
     class: Drupal\telegram_bots_api\TelegramBotsPluginManager
     parent: default_plugin_manager
+  telegram_bots_api.route_subscriber:
+    class: Drupal\telegram_bots_api\Routing\RouteSubscriber
+    arguments: ['@plugin.manager.telegrambots']
+    tags:
+      - { name: event_subscriber }
+

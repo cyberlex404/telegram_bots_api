@@ -3,6 +3,7 @@
 namespace Drupal\telegram_bots_api\Plugin\TelegramBots;
 
 use Drupal\telegram_bots_api\TelegramBotBase;
+use Telegram\Bot\Objects\Update;
 
 /**
  * @TelegramBot(
@@ -15,12 +16,17 @@ use Drupal\telegram_bots_api\TelegramBotBase;
 
 class Cyberlex404Bot extends TelegramBotBase {
 
-  public function getToken() {
-    return 'token';
+  public function commands() {
+    return [
+      \Telegram\Bot\Commands\HelpCommand::class,
+      \Drupal\telegram_holiday\Commands\StartCommand::class,
+    ];
   }
 
-  public function webhook($update) {
-    // TODO: Implement webhook() method.
+
+  public function executeUpdate(Update $update) {
+    // TODO: Implement executeUpdate() method.
+    dpm($update);
   }
 
 }

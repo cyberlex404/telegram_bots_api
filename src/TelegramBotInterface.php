@@ -1,13 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Lex
- * Date: 19.03.2017
- * Time: 23:09
- */
 
 namespace Drupal\telegram_bots_api;
 
+
+use Telegram\Bot\Objects\Update;
 
 interface TelegramBotInterface {
 
@@ -35,15 +31,28 @@ interface TelegramBotInterface {
   public function token();
 
   /**
+   * @return \Telegram\Bot\Commands\Command[]
+   */
+  public function commands();
+
+  /**
    * Webhook mehtod
    *
-   *
-   * @param array $update
-   *   Update object.
-   *
-   * @return string
-   *   Description of the sandwich that was just ordered. //todo : fix
+   * @return void
    */
-  public function webhook($update);
+  public function webhook();
+
+  /**
+   * @param \Telegram\Bot\Objects\Update $update
+   * @return void
+   */
+  public function executeUpdate(Update $update);
+
+  /**
+   * @return \Telegram\Bot\Api
+   */
+  public function api();
+
+
 
 }
