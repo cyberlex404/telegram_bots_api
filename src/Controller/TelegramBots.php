@@ -3,8 +3,13 @@
 namespace Drupal\telegram_bots_api\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Link;
+use Drupal\Core\Render\Renderer;
+use Drupal\Core\Url;
 use Drupal\telegram_bots_api\TelegramBotInterface;
 use Drupal\telegram_bots_api\TelegramBotsPluginManager;
+use Drupal\telegram_bots_api\TelegramCore;
+use Masterminds\HTML5\Exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -15,6 +20,18 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class TelegramBots extends ControllerBase {
 
   /**
+   * Drupal\Core\Render\Renderer definition.
+   *
+   * @var \Drupal\Core\Render\Renderer
+   */
+  protected $renderer;
+
+  /**
+   * @var \Drupal\telegram_bots_api\TelegramCore
+   */
+  protected $api;
+
+  /**
    * The TelegramBotsPluginManager.
    *
    *
@@ -22,83 +39,100 @@ class TelegramBots extends ControllerBase {
    */
   protected $telegramBotsManager;
 
-  function __construct(TelegramBotsPluginManager $telegramBotsManager) {
+  function __construct(TelegramBotsPluginManager $telegramBotsManager, Renderer $renderer, TelegramCore $api) {
     $this->telegramBotsManager = $telegramBotsManager;
+    $this->renderer = $renderer;
+    $this->api = $api;
   }
   /**
    * {@inheritdoc}
    *
-   *
    * @see container
    */
   public static function create(ContainerInterface $container) {
-    // Inject the plugin.manager.sandwich service that represents our plugin
-    // manager as defined in the plugin_type_example.services.yml file.
-    return new static($container->get('plugin.manager.telegrambots'));
+    return new static(
+      $container->get('plugin.manager.telegrambots'),
+      $container->get('renderer'),
+      $container->get('telegram_bots_api.coreapi') // @todo remove this
+    );
   }
 
   /**
    * List.
    *
-   * @return string
-   *   Return Hello string.
+   * @return array
    */
   public function list() {
 
-    $build = array();
+    $build = [];
 
     $build['intro'] = array(
-      '#markup' => t("This page lists the Telegram bots plugins we've created. The Telegram bots plugin type is defined in Drupal\\telegram_bots_api\\TelegramBots. The various plugins are defined in the Drupal\\telegram_bots_api\\Plugin\\TelegramBots namespace."),
+      '#markup' => t("This page lists the Telegram bots plugins."),
     );
 
-    // Get the list of all the sandwich plugins defined on the system from the
-    // plugin manager. Note that at this point, what we have is *definitions* of
-    // plugins, not the plugins themselves.
-    $sandwich_plugin_definitions = $this->telegramBotsManager->getDefinitions();
+    $header = [
+      'plugin' => $this->t('Plugin'),
+      'name' => $this->t('Bot name'),
+      'token' => $this->t('Token'),
+      'links' => $this->t('Link')
+    ];
 
-    // Let's output a list of the plugin definitions we now have.
-    $items = array();
-    foreach ($sandwich_plugin_definitions as $sandwich_plugin_definition) {
-      // Here we use various properties from the plugin definition. These values
-      // are defined in the annotation at the top of the plugin class: see
-      // \Drupal\plugin_type_example\Plugin\Sandwich\ExampleHamSandwich.
-      $items[] = t("@id (calories: @calories, description: @description )", array(
-        '@id' => $sandwich_plugin_definition['id'],
-        '@calories' => $sandwich_plugin_definition['calories'],
-        '@description' => $sandwich_plugin_definition['description'],
-      ));
+    $rows = [];
+
+    $plugin_definitions = $this->telegramBotsManager->getDefinitions();
+
+    foreach ($plugin_definitions as $plugin_id => $plugin_definition) {
+      /**
+       * @var $bot TelegramBotInterface
+       */
+      $bot = $this->telegramBotsManager->createInstance($plugin_id);
+
+
+      $coreApi = $this->api->setToken($bot->token()); // @todo remove this
+
+      $links = [
+        '#type' => 'dropbutton',
+        '#links' => [
+          'config' => [
+            'title' => $this->t('Config'),
+            'url' => Url::fromRoute('telegram_bots_api.bot_config_form', [
+              'telegram_bot_plugin' => $plugin_id,
+            ]),
+          ],
+          'test' => [
+            'title' => $this->t('Test'),
+            'url' => Url::fromRoute('telegram_bots_api.bot_config_form', [
+              'telegram_bot_plugin' => $plugin_id,
+            ]),
+          ],
+        ],
+      ];
+
+      try {
+        $linkOut = $this->renderer->render($links);
+      }catch (\Exception $e) {
+        $linkOut = '';
+      }
+
+      $token = $bot->token();
+      $rows[] = [
+        'plugin' => $plugin_id,
+        'name' => $plugin_id,
+        'token' => $token,
+        'links' => $linkOut,
+      ];
     }
 
     // Add our list to the render array.
     $build['plugin_definitions'] = array(
-      '#theme' => 'item_list',
-      '#title' => 'Sandwich plugin definitions',
-      '#items' => $items,
+      '#theme' => 'table',
+      //'#cache' => ['disabled' => TRUE],
+    //  '#caption' => 'Bot list',
+      '#header' => $header,
+      '#rows' => $rows,
     );
 
 
-    $items = array();
-    // The array of plugin definitions is keyed by plugin id, so we can just use
-    // that to load our plugin instances.
-    foreach ($sandwich_plugin_definitions as $plugin_id => $sandwich_plugin_definition) {
-
-
-      /**
-       * @var $telegramBot TelegramBotInterface
-       */
-      $telegramBot = $this->telegramBotsManager->createInstance($plugin_id, array('of' => 'configuration values'));
-
-      dpm($telegramBot->token(),$telegramBot->bot());
-
-      $items[] = $telegramBot->description();
-      $telegramBot->webhook();
-    }
-
-    $build['plugins'] = array(
-      '#theme' => 'item_list',
-      '#title' => 'Sandwich plugins',
-      '#items' => $items,
-    );
     return $build;
   }
 

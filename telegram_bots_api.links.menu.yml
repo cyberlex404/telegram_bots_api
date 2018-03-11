@@ -1,0 +1,6 @@
+telegram_bots_api.telegram_bots_list:
+  title: 'Telegram bots'
+  route_name: telegram_bots_api.telegram_bots_list
+  description: 'List Telegram bots'
+  parent: system.admin_config_services
+  weight: 100

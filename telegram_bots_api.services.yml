@@ -1,4 +1,7 @@
 services:
+  logger.channel.telegram:
+    parent: logger.channel_base
+    arguments: ['telegram']
   plugin.manager.telegrambots:
     class: Drupal\telegram_bots_api\TelegramBotsPluginManager
     parent: default_plugin_manager
@@ -7,4 +10,8 @@ services:
     arguments: ['@plugin.manager.telegrambots']
     tags:
       - { name: event_subscriber }
+
+  telegram_bots_api.coreapi:
+    class: Drupal\telegram_bots_api\TelegramCore
+    arguments: ['@http_client', '@logger.channel.telegram', '@config.factory']
 

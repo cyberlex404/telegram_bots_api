@@ -1,0 +1,4 @@
+access config telegram bot:
+  title: 'Access config telegram bot'
+  description: 'Allow to access config telegram bot.'
+  restrict access: true

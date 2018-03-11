@@ -2,6 +2,7 @@
 
 namespace Drupal\telegram_bots_api\Routing;
 
+use Drupal\Console\Bootstrap\Drupal;
 use Drupal\Core\Routing\RouteSubscriberBase;
 use Drupal\Core\Routing\RoutingEvents;
 use Drupal\telegram_bots_api\TelegramBotsPluginManager;
@@ -36,22 +37,34 @@ class RouteSubscriber extends RouteSubscriberBase {
 
   /**
    * {@inheritdoc}
+   *
+   * @todo get bot data by method after create instance
    */
   protected function alterRoutes(RouteCollection $collection) {
-    $telegramBotsDefinitions = $this->telegramBotsManager->getDefinitions();
+    //$telegramBotsDefinitions = $this->telegramBotsManager->getDefinitions();
 
    // dpm($telegramBotsDefinitions, '$telegramBotsDefinitions');
 
-    foreach ($telegramBotsDefinitions as $botsDefinition) {
+  ///  foreach ($telegramBotsDefinitions as $botsDefinition) {
 
-      $token = $botsDefinition['token'];
+ //     $pluginId = $botsDefinition['id'];
+
+    //  $botsManager = \Drupal::service('plugin.manager.telegrambots');
+
+      /**
+       * @var $telegramBot \Drupal\telegram_bots_api\TelegramBotInterface
+       */
+    //  $telegramBot = $this->telegramBotsManager->createInstance($pluginId);
+
+/*
+      $token = $telegramBot->token();
       $route = new Route(
-      // the url path to match
+
         'telegram/webhook/' . $token,
         // the defaults (see the trousers.routing.yml for structure)
         array(
-          '_title' => $botsDefinition['bot'],
-          '_controller' => '\Drupal\telegram_bots_api\Controller\Webhook::webhook',
+          '_title' => 'Webhook',
+          '_controller' => '\Drupal\telegram_bots_api\Controller\Webhook::webHook',
           'bot' => $botsDefinition['id'],
           'telegram_token' => $token,
         ),
@@ -60,10 +73,14 @@ class RouteSubscriber extends RouteSubscriberBase {
           '_permission' => 'access content',
         )
       );
-      $route->setMethods(['POST', 'GET']); // todo : remove GET method
+*/
+     // $route->setMethods(['POST', 'GET']); // todo : remove GET method
       // Add our route to the collection with a unique key.
-      $collection->add('telegram_bots_api.webhook.' . $token, $route);
-    }
+    //  $collection->add('telegram_bots_api.webhook.' . $pluginId, $route);
+
+
+  //  }
+
   }
 
 

@@ -6,3 +6,24 @@ telegram_bots_api.telegram_bots_list:
     _title: 'List Telegram bots'
   requirements:
     _permission: 'access content'
+
+telegram_bots_api.bot_config_form:
+  path: '/admin/config/services/telegram-bots/{telegram_bot_plugin}'
+  defaults:
+    _form: '\Drupal\telegram_bots_api\Form\BotConfigureForm'
+    _title: 'Telegram Bot configuration'
+  requirements:
+    _permission: 'access config telegram bot'
+  options:
+    _admin_route: TRUE
+
+telegram_bots_api.webhook:
+  path: '/telegram/{token}/{plugin}/webhook'
+  defaults:
+    _controller: '\Drupal\telegram_bots_api\Controller\Webhook::webHook'
+    _title: 'WebHook'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+#    token: '[a-zA-Z]+'
+

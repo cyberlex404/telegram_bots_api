@@ -38,9 +38,9 @@ interface TelegramBotInterface {
   /**
    * Webhook mehtod
    *
-   * @return void
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
    */
-  public function webhook();
+  public function webHook();
 
   /**
    * @param \Telegram\Bot\Objects\Update $update
@@ -50,8 +50,16 @@ interface TelegramBotInterface {
 
   /**
    * @return \Telegram\Bot\Api
+   * @throws \Exception
    */
   public function api();
+
+  public function getBotInfo();
+
+  public function setWebHook();
+
+
+  public function webhookInfo();
 
 
 

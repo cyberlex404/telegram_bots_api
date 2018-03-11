@@ -1,0 +1,12 @@
+telegram_bots_api.bot.*:
+  type: config_object
+  mapping:
+    token:
+      type: string
+      label: 'Token'
+    bot:
+      type: string
+      label: 'Bot name'
+    chat_id:
+      type: string
+      label: 'Default chat ID'

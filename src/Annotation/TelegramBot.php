@@ -46,4 +46,19 @@ class TelegramBot extends Plugin {
    * @var string
    */
   public $token;
+
+  /**
+   * Configurable flag
+   *
+   * @var bool
+   */
+  public $configurable;
+
+  public function __construct($values) {
+    $values += [
+      'configurable' => FALSE,
+    ];
+    parent::__construct($values);
+  }
+
 }
