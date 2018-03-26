@@ -4,3 +4,11 @@ telegram_bots_api.telegram_bots_list:
   description: 'List Telegram bots'
   parent: system.admin_config_services
   weight: 100
+# Bot integration menu items definition
+entity.bot_integration.collection:
+  title: 'Telegram Bot integration'
+  route_name: entity.bot_integration.collection
+  description: 'Telegram Bot integration'
+  parent: system.admin_config_services
+  weight: 5
+

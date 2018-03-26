@@ -25,6 +25,13 @@ class TelegramBot extends Plugin {
   public $id;
 
   /**
+   * Human readable plugin label
+   *
+   * @var \Drupal\Core\Annotation\Translation
+   */
+  public $label;
+
+  /**
    * The Bot Name
    * @var string
    */

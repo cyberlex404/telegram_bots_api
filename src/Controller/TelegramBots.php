@@ -2,6 +2,7 @@
 
 namespace Drupal\telegram_bots_api\Controller;
 
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Link;
 use Drupal\Core\Render\Renderer;
@@ -131,6 +132,33 @@ class TelegramBots extends ControllerBase {
       '#header' => $header,
       '#rows' => $rows,
     );
+
+    $header = [
+      'plugin' => $this->t('Plugin'),
+      'name' => $this->t('Bot name'),
+      'token' => $this->t('Token'),
+      'links' => $this->t('Link')
+    ];
+    $rows = [];
+
+    try{
+      $integrationStorage = $this->entityTypeManager()->getStorage('bot_integration');
+
+      $integrations = $integrationStorage->loadMultiple();
+      /**
+       * @var $integrations \Drupal\telegram_bots_api\Entity\BotIntegrationInterface[]
+       */
+      foreach ($integrations as $integration) {
+        $rows[] = [
+          'plugin' => $integration->plugin(),
+          'token' => $integration->token(),
+        ];
+      }
+    }catch (InvalidPluginDefinitionException $exception) {
+
+    }
+
+
 
 
     return $build;

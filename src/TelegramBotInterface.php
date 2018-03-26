@@ -3,6 +3,8 @@
 namespace Drupal\telegram_bots_api;
 
 
+use Drupal\Core\Url;
+use Symfony\Component\HttpFoundation\Request;
 use Telegram\Bot\Objects\Update;
 
 interface TelegramBotInterface {
@@ -40,7 +42,7 @@ interface TelegramBotInterface {
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    */
-  public function webHook();
+  public function webHook(Request $request);
 
   /**
    * @param \Telegram\Bot\Objects\Update $update
@@ -56,7 +58,7 @@ interface TelegramBotInterface {
 
   public function getBotInfo();
 
-  public function setWebHook();
+  public function setWebHook(Url $url);
 
 
   public function webhookInfo();

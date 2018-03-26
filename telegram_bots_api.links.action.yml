@@ -1,0 +1,6 @@
+entity.bot_integration.add_form:
+  route_name: entity.bot_integration.add_form
+  title: 'Add Bot integration'
+  appears_on:
+    - entity.bot_integration.collection
+

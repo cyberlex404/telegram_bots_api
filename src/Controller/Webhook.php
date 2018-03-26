@@ -2,14 +2,17 @@
 
 namespace Drupal\telegram_bots_api\Controller;
 
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Logger\LoggerChannel;
+use Drupal\telegram_bots_api\Entity\BotIntegrationInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Telegram\Bot\Api;
 use Drupal\telegram_bots_api\TelegramBotInterface;
 
@@ -72,41 +75,73 @@ class Webhook extends ControllerBase {
   public function webHookR($bot, $telegram_token) {
     /**
      * @var $telegramBot TelegramBotInterface
+     * @var $integration \Drupal\telegram_bots_api\Entity\BotIntegrationInterface
      */
+    try{
+      $integration = $this->entityTypeManager()->getStorage('bot_integration')->load($bot);
+    }catch (InvalidPluginDefinitionException $exception) {
+      \Drupal::logger('telegram')->error('Error in load intagration');
+    }
+
+
     $telegramBot = $this->telegramBotsManager->createInstance($bot);
 
     dpm($telegram_token);
     if ($telegramBot instanceof TelegramBotInterface) {
-      $response = $telegramBot->webHook();
+      $response = $telegramBot->webHook(\Drupal::request());
     }
 
     return $response;
   }
 
-  public function webHook($token, $plugin) {
-    $response = new JsonResponse([]);
+  public function webHook($token, $plugin, Request $request) {
+    $response = new JsonResponse(['getMethod' => $request->getMethod()]);
+    dpm($token);
+    dpm($plugin);
 
     try{
       /**
-       * @var $telegramBot TelegramBotInterface
+       * @var $integration \Drupal\telegram_bots_api\Entity\BotIntegrationInterface
        */
-      $telegramBot = $this->telegramBotsManager->createInstance($plugin);
+      $integration = $this->entityTypeManager()->getStorage('bot_integration')->load($plugin);
+      dpm($integration);
+    }catch (InvalidPluginDefinitionException $exception) {
+      \Drupal::logger('telegram')->error('Error in load intagration');
+      return [];
+    }
+
+
+    if ($integration instanceof BotIntegrationInterface) {
+      $pluginId = $integration->plugin();
+      $configuration = [
+        'integration' => $integration,
+        'token' => $integration->token(),
+      ];
+      try{
+        $telegramBot = $this->telegramBotsManager->createInstance($pluginId, $configuration);
+      }catch (PluginException $exception){
+        $this->logger->error($exception->getMessage());
+        return $response;
+      }
 
       if ($telegramBot instanceof TelegramBotInterface) {
-        $response = $telegramBot->webHook();
+        $response = $telegramBot->webHook($request);
       }
-    }catch (PluginException $exception) {
-      $this->logger->error("Bot: $plugin. Error:" . $exception->getMessage());
-      return $response;
+    }
+
+    if ($request->getMethod() == 'GET') {
+      return ['#markup' => $integration->token()];
     }
     return $response;
   }
 
   /**
    * Checks access for a specific request.
-   *
+   * @todo now not use
+   * @todo fix in telegram_bots_api.routing.yml
    * @param \Drupal\Core\Session\AccountInterface $account
    *   Run access checks for this account.
+   * @return AccessResult
    */
   public function access($bot, $telegram_token) {
     $telegramBot = $this->telegramBotsManager->createInstance($bot);

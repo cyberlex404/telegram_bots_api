@@ -4,20 +4,24 @@ namespace Drupal\telegram_bots_api;
 
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Config\ConfigFactory;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Logger\LoggerChannel;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\telegram_bots_api\Exceptions\TelegramTokenException;
 use Drupal\telegram_bots_api\TelegramApi as Api;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 //use Telegram\Bot\Api;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Telegram\Bot\Exceptions\TelegramResponseException;
 use Telegram\Bot\Objects\Update;
 use Zend\Diactoros\Response\JsonResponse;
 
 abstract class TelegramBotBase extends PluginBase implements TelegramBotInterface, ContainerFactoryPluginInterface {
 
-
+  use StringTranslationTrait;
   /**
    * Drupal\Core\Config\ConfigFactory definition.
    *
@@ -47,10 +51,21 @@ abstract class TelegramBotBase extends PluginBase implements TelegramBotInterfac
    */
   protected $api;
 
+
+  /**
+   * @var \Drupal\telegram_bots_api\Entity\BotIntegrationInterface
+   */
+  protected $integration;
+
+
   public function __construct(array $configuration, $plugin_id, $plugin_definition, LoggerChannel $logger, ConfigFactory $config_factory) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->token = $configuration['token'];
     $this->logger = $logger;
     $this->configFactory = $config_factory;
+    /**
+     * @todo add set $integration value
+     */
   }
 
   /**
@@ -74,6 +89,10 @@ abstract class TelegramBotBase extends PluginBase implements TelegramBotInterfac
 
   public function id() {
     return $this->pluginDefinition['id'];
+  }
+
+  public function label() {
+    return $this->pluginDefinition['label'];
   }
 
   public function bot() {
@@ -146,14 +165,14 @@ abstract class TelegramBotBase extends PluginBase implements TelegramBotInterfac
   }
 
 
-  public function setWebHook() {
+  /**
+   * @todo Replace by $this->integration->webhookUrl()
+   * @param \Drupal\Core\Url $url
+   */
+  public function setWebHook(Url $url) {
     try{
       $api = $this->api();
-      $url = Url::fromRoute('telegram_bots_api.webhook', [
-        'token' => $this->token(),
-        'plugin' => $this->id(),
-      ]);
-      $url->setAbsolute();
+     // $url->setAbsolute();
       $response = $api->setWebhook(['url' => $url->toString()]);
 
 
@@ -169,7 +188,7 @@ abstract class TelegramBotBase extends PluginBase implements TelegramBotInterfac
   /**
    * {@inheritdoc}
    */
-  final public function webHook() {
+  final public function webHook(Request $request) {
 
     try {
       $api = $this->api();
@@ -179,7 +198,7 @@ abstract class TelegramBotBase extends PluginBase implements TelegramBotInterfac
 
     try {
 
-      $update = $api->commandsHandler(true);
+      $update = $api->commandsHandler(true, $request);
       if($update->getUpdateId()) {
         $this->executeUpdate($update);
 
@@ -196,7 +215,7 @@ abstract class TelegramBotBase extends PluginBase implements TelegramBotInterfac
     } catch (TelegramResponseException $e) {
       $this->apiLogger()->error($e->getMessage());
     }
-    $response = new JsonResponse(['updateID' => $update->getUpdateId()]);
+    $response = new JsonResponse(['updateID' => $update->getUpdateId(), 'met' => $request->getMethod()]);
     return $response;
   }
 
@@ -219,6 +238,8 @@ abstract class TelegramBotBase extends PluginBase implements TelegramBotInterfac
     return [
       \Telegram\Bot\Commands\HelpCommand::class,
       \Drupal\telegram_bots_api\Commands\StartCommand::class,
+      \Drupal\telegram_bots_api\Commands\RunCronCommand::class,
+      \Drupal\telegram_bots_api\Commands\GetmeCommand::class,
     ];
   }
 
@@ -232,6 +253,37 @@ abstract class TelegramBotBase extends PluginBase implements TelegramBotInterfac
     $message = $this->api()->webhookInfo();
     dpm($message);
   }
+
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    $definition = $this->getPluginDefinition();
+    $form['hello'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Hello message'),
+      '#maxlength' => 255,
+      '#required' => TRUE,
+    ];
+    $form += $this->settingsForm($form, $form_state);
+    return $form;
+  }
+
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+    // Process the block's submission handling if no errors occurred only.
+    if (!$form_state->getErrors()) {
+      $this->configuration['hello'] = $form_state->getValue('hello');
+      $this->settingsSubmit($form, $form_state);
+    }
+  }
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsForm($form, FormStateInterface $form_state) {
+    return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsSubmit($form, FormStateInterface $form_state) {}
 
 
 

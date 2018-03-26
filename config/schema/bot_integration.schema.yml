@@ -1,0 +1,18 @@
+telegram_bots_api.bot_integration.*:
+  type: config_entity
+  label: 'Bot integration config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    token:
+      type: string
+      label: 'Token'
+    plugin:
+      type: string
+      label: 'Plugin'
+    uuid:
+      type: string

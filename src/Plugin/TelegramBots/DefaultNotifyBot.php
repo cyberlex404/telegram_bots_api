@@ -16,6 +16,7 @@ use Telegram\Bot\Objects\Update;
 /**
  * @TelegramBot(
  *   id = "default_notify_bot",
+ *   label = @Translation("Default notify plugin"),
  *   description = @Translation("Default notify Bot"),
  *   configurable = TRUE
  * )
@@ -24,7 +25,7 @@ use Telegram\Bot\Objects\Update;
 class DefaultNotifyBot extends TelegramBotBase {
 
   public function executeUpdate(Update $update) {
-    \Drupal::logger('telegram')->debug(Json::encode($update));
+    \Drupal::logger('default_notify_bot logger')->debug(Json::encode($update));
   }
 
   /**

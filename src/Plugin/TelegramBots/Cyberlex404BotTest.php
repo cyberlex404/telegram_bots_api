@@ -9,6 +9,7 @@ use Telegram\Bot\Objects\Update;
 /**
  * @TelegramBot(
  *   id = "cyberlex404test_bot",
+ *   label = @Translation("Cyberlex404 custom plugin TEST"),
  *   description = @Translation("CyberLex404 Test 2 Bot"),
  *   configurable = TRUE
  * )
@@ -17,7 +18,7 @@ use Telegram\Bot\Objects\Update;
 class Cyberlex404BotTest extends TelegramBotBase {
 
   /**
-   * @inheritdoc
+   * {@inheritdoc}
    */
   public function commands() {
     $commands = parent::defaultCommands();
@@ -27,7 +28,7 @@ class Cyberlex404BotTest extends TelegramBotBase {
 
 
   public function executeUpdate(Update $update) {
-    \Drupal::logger('telegram webhook')->debug(Json::encode($update));
+    \Drupal::logger('cyberlex404test_bot logger')->debug(Json::encode($update));
   }
 
 }

@@ -8,6 +8,7 @@ use Telegram\Bot\Objects\Update;
 /**
  * @TelegramBot(
  *   id = "cyberlex404_bot",
+ *   label = @Translation("Cyberlex404 custom plugin"),
  *   description = @Translation("CyberLex404 Bot"),
  *   configurable = TRUE
  * )
