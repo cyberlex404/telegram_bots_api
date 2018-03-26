@@ -32,7 +32,7 @@ telegram_bots_api.webhook:
   defaults:
     _controller: '\Drupal\telegram_bots_api\Controller\Webhook::webHook'
     _title: 'WebHook'
- # methods: [POST]
+ # methods: [POST] # use this on release
   requirements:
     _permission: 'access content'
 #    token: '[a-zA-Z]+'

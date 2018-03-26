@@ -69,7 +69,7 @@ class Webhook extends ControllerBase {
    * Plugin ID
    *
    * @param $bot
-   *
+   * @deprecated 1.x-dev
    * @return JsonResponse
    */
   public function webHookR($bot, $telegram_token) {

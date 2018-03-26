@@ -170,9 +170,6 @@ class BotIntegrationForm extends EntityForm {
     $bot_integration = $this->entity;
     dpm($bot_integration);
 
-
-
-    $demo = '453816184:AAGy7zCkraMUiiH5UgcT3Y8pnZZCd5X0Drk';
     if ($bot_integration instanceof BotIntegrationInterface) {
       $demo = $bot_integration->token();
       $telegram_bot_plugin = $bot_integration->plugin();

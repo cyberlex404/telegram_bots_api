@@ -14,6 +14,8 @@ use Symfony\Component\Routing\RouteCollection;
  *
  * @package Drupal\telegram_bots_api\Routing
  * Listens to the dynamic route events.
+ *
+ * @deprecated 1.x-dev @see telegram_bots_api.routing.yml
  */
 class RouteSubscriber extends RouteSubscriberBase {
 
